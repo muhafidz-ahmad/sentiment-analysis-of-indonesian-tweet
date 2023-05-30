@@ -15,7 +15,7 @@ tweet = st.text_area("What's happening? (Indonesian tweet only)","")
 
 if st.button("Send", use_container_width=True):
     with st.spinner("Please wait, analyzing tweet sentiment..."):
-        df, preprocess_text = model.predict(my_model, tweet)
+        df, preprocess_text = load_model.predict(my_model, tweet)
         for cat, prob in zip(df['sentiment'], df['probability']):
             if prob < 5:
                 break
