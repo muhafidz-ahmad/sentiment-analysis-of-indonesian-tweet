@@ -23,7 +23,7 @@ def predict(model, text):
                             labels_list))
     
     # text preprocessing, include tokenizing
-    preprocess_text = text_preprocessing.preprocess(text, stem=True)  # text_preprocessing
+    preprocess_text = text_preprocessing.preprocess(text)  # text_preprocessing
     text = model[1].texts_to_sequences([preprocess_text])   # tokenizer
     text = pad_sequences(text, padding='post',
                          maxlen=100, truncating='post')
