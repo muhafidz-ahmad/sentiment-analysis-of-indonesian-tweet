@@ -72,71 +72,51 @@ Text preprocessing dilakukan berdasarkan beberapa alasan. Pertama, untuk membuat
 Terdapat 3 teknik yang dilakukan pada text preprocessing di project ini, yaitu:
  
 1. Case folding, membuat semua huruf menjadi huruf kecil. Case folding dilakukan untuk membuat kata-kata yang sama namun dengan dengan case yang berbeda menjadi satu makna yang sama, hal ini karena mesin memiliki sifat case sensitivity.
-2. Punctuation removal, menghapus semua tanda baca, seperti titik, koma, dan tanda baca lainnya. Puctuation removal dilakukan karena tanda baca bisa menjadi distraksi bagi mesin dalam memahami makna suatu kalimat.
-3. Stopword removal, menghapus kata-kata yang termasuk stopword. Stopword removal juga dilakukan karena stopword tidak mempunyai makna, dan jika tidak dihapus hanya akan menanbah beban komputasi.
- 
-Text Preprocessing ini membuat beberapa tweet menjadi hilang teksnya, dalam artian, semua kata-kata dan karakter pada tweet tersebut terhapus dan membuat tweet tersebut kosong. Oleh karena itu, baris yang tweetnya menjadi kosong dihapus.
- 
-![image](https://github.com/muhafidz-ahmad/tweet-entity-sentiment-analysis/assets/115754250/a4c59cb5-c0be-459a-9a02-d53f11c1b6eb)
- 
-Setelah text preprocessing ini juga, rata-rata jumlah kata tiap sentiment berkurang menjadi sekitar 10-13 kata.
+2. Remove unnecessary character, menghapus karakter atau kata-kata yang tidak penting. Seperti anotasi bawaan dari twitter.
+3. Punctuation removal, menghapus semua tanda baca, seperti titik, koma, dan tanda baca lainnya. Puctuation removal dilakukan karena tanda baca bisa menjadi distraksi bagi mesin dalam memahami makna suatu kalimat.
+4. Stopword removal, menghapus kata-kata yang termasuk stopword. Stopword removal juga dilakukan karena stopword tidak mempunyai makna, dan jika tidak dihapus hanya akan menanbah beban komputasi.
+5. Mengganti kata-kata alay atau tidak baku menjadi baku, menggunakan dictionary yang telah disediakan di tautan dataset kaggle yang sama.
  
 ## Feature Engineering
-Fitur yang akan menjadi target adalah sentiment saja.
+Akan dibuat empat target atau label pada proyek ini, yaitu:
+* Positive (Bukan Hate speech dan Tidak Abusive)
+* Negative 1 (Hate speech)
+* Negative 2 (Abusive)
+* Very Negative (Hate speech dan Abusive)
+
+![image](https://github.com/muhafidz-ahmad/sentiment-analysis-of-indonesian-tweet/assets/115754250/2372e85a-7869-488f-b5d3-76e101c2c020)
  
 ### Ubah label menjadi one hot encoding
 Target akan diubah menjadi one-hot encoding agar lebih mudah dimasukan ke dalam model.
 Untuk mengubah kolom sentiment menjadi one-hot encoding, digunakan fungsi *get_dummies()*.
  
-Setelah penggunakan fungsi *get_dummies()* ini, kolom sentiment akan dipecah menjadi 4 kolom, karena kolom sentiment memiliki 4 nilai unik, yaitu Positive, Negative, Irrelevant, dan Neutral.
+Setelah penggunakan fungsi *get_dummies()* ini, kolom sentiment akan dipecah menjadi 4 kolom, karena kolom sentiment memiliki 4 nilai unik, yaitu Positive, Negative 1, Negative 2, dan Very Negative.
  
 ### Tokenizing
 Tokenizing dilakukan untuk memecah kalimat tweet menjadi token-token atau kata-kata.
-Pada model LSTM + Attention, tokenizing dilakukan dengan menggunakan fungsi Tokenizer di tensorflow keras. Kemudian, tokenizer dilatih hanya pada data training.
- 
-Sedangkan pada model DistilBERT, tokenizing dilakukan dengan menggunakan pretrained tokenizer dari DistilBERT.
- 
-```
-tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
-```
+Pada model GRU, tokenizing dilakukan dengan menggunakan fungsi Tokenizer di tensorflow keras. Kemudian, tokenizer dilatih hanya pada data training.
  
 # Modelling
-## 1. LSTM + Attention
-[Attention Mechanism](https://arxiv.org/pdf/1409.0473.pdf) diperkenalkan pada tahun 2014 oleh Bahdanau sebagai solusi untuk meningkatkan performa dari RNN dan LSTM biasa. Attention mechanism akan memberi atensi lebih pada kata-kata yang lebih relevan dalam pembuatan output, dalam hal ini adalah target klasifikasi.
+GRU (Gated Recurrent Unit) adalah salah satu jenis arsitektur RNN (Recurrent Neural Network) yang dikembangkan oleh Cho et al. pada tahun 2014. GRU adalah pengembangan dari LSTM (Long Short-Term Memory) yang memiliki kemampuan untuk mengatasi masalah vanishing gradient pada LSTM. GRU memiliki dua gate yaitu reset gate dan update gate yang memungkinkan GRU untuk memilih informasi mana yang akan disimpan dan mana yang akan diabaikan. GRU juga memiliki kemampuan untuk mengatasi masalah overfitting pada data training.
+
+![image](https://github.com/muhafidz-ahmad/sentiment-analysis-of-indonesian-tweet/assets/115754250/aa48093d-5650-4293-a24e-4ce9cce1ea10)
  
-![Attention Mechanism](https://github.com/muhafidz-ahmad/tweet-entity-sentiment-analysis/assets/115754250/8ebc4581-15fa-497d-b68f-9d1d8a109043)
- 
-Kelebihan dari model ini adalah proses training yang jauh lebih singkat, karena hyperparameter yang masih bisa diatur secara manual sesuai dengan kebutuhan.
- 
-Kekurangannya adalah model ini bisa dibilang model yang sudah tertinggal, karena model paling canggih saat ini adalah sudah berbasis transformer, bukan berbasis RNN.
+Kekurangan model ini bisa dibilang model yang sudah tertinggal, karena model paling canggih saat ini adalah sudah berbasis transformer, bukan berbasis RNN.
  
 Pada project ini, akan digunakan arsitektur LSTM dengan tambahan Attention Mechanism.
 Peningkatan performa dilakukan dengan hyperparameter tuning secara manual. Adapun hyperparameter yang memiliki nilai akurasi tertinggi project ini adalah:
-* embedding_dim = 64
-* dense_dim = 32
+* embedding_dim = 16
+* dense_dim = 16
 * dense_layers = 1
-* dropout = 0.25
-* lr = 0.008
-* lstm_dim = 64
-* lstm_layers = 1
+* dropout = 0.5
+* lr = 0.001
+* gru_dim = 32
+* gru_layers = 1
 * batch_size = 256
 * epochs = 45
  
-## 2. DistilBERT
-DistilBERT adalah pretrained model transformer kecil, cepat, dan ringan yang dilatih dengan mendistilasi BERT base. Model ini memiliki jumlah parameter yang lebih sedikit dibandingkan BERT yang membuat model ini akan lebih ringan dalam beban komputasi.
- 
-Kelebihan model DistilBERT adalah performa yang hampir setara dengan bert-base-uncased namun dengan beban komputasi yang lebih kecil.
-Kekurangannya dibandingkan dengan LSTM + Attention adalah proses training yang lebih lama, dan arsitektur modelnya sudah fix sehingga tidak dapat diubah dengan hyperparameter tuning.
- 
-Adapun hyperparameter yang masih bisa dituning pada project ini adalah:
-* MAXLEN = 32
-* BATCH_SIZE = 256
-* EPOCHS = 5
-* LR = 3e-5
- 
 # Evaluation
-Metrik evaluasi yang digunakan pada project ini ada 3, yaitu:
-1. Akurasi
+Metrik evaluasi yang digunakan pada project ini adalah akurasi.
 Akurasi merupakan metrik yang dapat mengukur kemampuan model klasifikasi dalam mengklasifikasikan dengan benar data pada keseluruhan dataset. Akurasi dapat dihitung dengan membagi jumlah prediksi yang benar dibagi dengan jumlah total data. 
  
 $$akurasi = {TP + TN \\over TP + TN + FP + FN}.$$
@@ -147,47 +127,22 @@ Dimana:
 * FP (False Positive), jumlah data negatif yang salah diklasifikasikan sebagai positif (type 1 error).
 * FN (False Negative), jumlah data positif yang salah diklasifikasikan sebagai negatif (type 2 error).
  
-2. Presisi
-Presisi merupakan metrik yang mengukur sejauh mana data yang diklasifikasikan sebagai positif oleh model yang datanya benar-benar positif. Metrik ini memberikan gambaran tentang seberapa akurat model dalam mengidentifikasi data positif.
+Model berhasil mendapatkan nilai evaluasi sebagai berikut:
+* **Akurasi Training: 0.8374**
+* **Akurasi Validasi: 0.7578**
+* **Akurasi Testing: 0.7589**
  
-$$presisi = {TP \\over TP + FP}.$$
+Proses training berhenti pada epochs ke-18, karena dalam 5 epochs terakhir tidak ada penurunan loss validation yang besar.
  
-3. Recall
-Recall merupakan metrik yang mengukur sejauh mana model dapat mengidentifikasi secara benar data positif yang sebenarnya. Recall memberikan gambaran tentang seberapa baik model dalam menemukan data positif secara keseluruhan.
- 
-$$recall = {TP \\over TP + FN}.$$
- 
-## Evaluasi LSTM + Attention
-LSTM + Attention mendapatkan nilai evaluasi sebagai berikut:
-* **Akurasi: 0.8493**
-* **Presisi: 0.9053**
-* **Recall: 0.7984**
- 
-Nilai evaluasi tersebut diperoleh pada hyperparameter berikut:
-* embedding_dim = 64
-* dense_dim = 32
-* dense_layers = 1
-* dropout = 0.25
-* learning rate = 0.008
-* lstm_dim = 64
-* lstm_layers = 1
-* batch_size = 256
- 
-Proses training berhenti pada epochs ke-17, karena dalam 5 epochs terakhir tidak ada penurunan loss validation yang besar.
- 
-## Evaluasi DistilBERT
-DistilBERT mendapatkan nilai evaluasi sebagai berikut:
-* **Akurasi: 0.9552**
-* **Presisi: 0.9570**
-* **Recall: 0.9521**
- 
-Nilai evaluasi tersebut diperoleh pada hyperparameter berikut:
-* maxlen = 32
-* batch size = 256
-* learning rate = 3e-5
-* epochs = 5
- 
-Berbeda dengan LSTM + Attention yang menggunakan early stopping, DistilBERT dilatih hanya dengan 5 epochs saja, karena DistilBERT telah dilatih sebelumnya dengan data yang sangat besar, dan parameter yang kompleks juga.
- 
-Dari kedua evaluasi model di atas, terlihat jelas bahwa DistilBERT memeiliki performa yang lebih baik dalam mendeteksi sentiment pada dataset yang digunakan.
-Selisih nilai akurasi, presisi, dan recall dengan LSTM + Attention juga sangat jauh.
+# Conclusion
+* Dari dataset yang digunakan, terdapat hingga 42,2% tweet yang berisi ujaran kebencian. Kata yang paling sering muncul dalam hate speech tersebut terdiri dari “Jokowi”, “cebong”, “komunis”, dan “ganti presiden”.
+* 38,3% tweet yang berkonotasi kasar (abusive tweet) menampilkan beberapa kata kasar yang sering, seperti “g*blok”, “anj*ng”, dan “d*ngu”.
+* Hate speech tweet dan abusive tweet paling tinggi berada pada kategori other dan individu, yang artinya banyak tweet yang menyerang personal orang lain.
+* Hate speech individu memiliki korelasi yang kuat dengan hate speech weak (seperti menyindir). Sedangkan hate speech yang ditujukan pada suatu grup memiliki korelasi yang kuat dengan hate speech moderate (seperti mengancam, fitnah, provokasi).
+* Model machine learning dapat mendeteksi 76% sentiment tweet dengan benar pada data test, yang sebetulnya masih perlu ditingkatkan lagi.
+
+# Recommendation
+* Memberikan edukasi yang lebih gencar kepada masyarakat mengenai dampak negatif dan ke-tidak-bermanfaatannya hate speech.
+* Menerapkan model machine learning untuk menyaring hate speech tweet. Dengan model yang telah dibuat, setidaknya dapat menyaring 70% tweet yang ada.
+* Terus meningkatkan performa model machine learning dengan hyperparameter tuning lebih lanjut dan memperkaya data hingga dapat diperoleh data yang seimbang.
+* Memantau secara berkala model machine learning yang telah diterapkan, dan juga memantau tren dan perubahan dalam penggunaan bahasa dan perilaku netizen terkait hate speech.
