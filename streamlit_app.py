@@ -1,14 +1,14 @@
 import streamlit as st
 
 import text_preprocessing
-import model
+import load_model
 
 # title
 st.title("Analyze Your Tweet Sentiment!!!")
 
 # load model
 with st.spinner("Loading Model...."):
-    my_model = model.load_model()
+    my_model = load_model.load_model()
 
 # get new tweet
 tweet = st.text_area("What's happening? (Indonesian tweet only)","")
