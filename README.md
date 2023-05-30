@@ -1,6 +1,8 @@
 # Project Overview
 Model dideploy di [Streamlit](https://muhafidz-ahmad-sentiment-analysis-of-indon-streamlit-app-hwzuqv.streamlit.app/) untuk dapat dilakukan demo.
 
+![image](https://github.com/muhafidz-ahmad/sentiment-analysis-of-indonesian-tweet/assets/115754250/877fdde8-da1e-46d3-815b-110a74cda1e7)
+
 Twitter adalah sebuah sosial media dimana semua orang bisa membuat konten berupa tulisan dan membagikannya secara luas, dari konten edukatif hingga konten hiburan. Namun, tidak sedikit orang-orang membuat konten bersifat negatif terhadap sesuatu hal. Konten negatif tersebut dapat memicu kepada banyak hal negatif lainnya, bahkan bisa menular pada orang lain yang membaca konten tersebut.
 * Diperlukannya sebuah filter yang dapat menyaring tweet yang memiliki konten yang negatif. Salah satu teknologi yang dapat digunakan untuk menyaring tweet tersebut adalah dengan machine learning.
 * Telah banyak penelitian yang dilakukan dalam pembuatan model machine learning sentimen analysis ini. Beberapa diantaranya adalah:
