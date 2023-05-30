@@ -10,8 +10,8 @@ import pickle
 import text_preprocessing
 
 def load_model():
-  model = tf.keras.models.load_model('model.h5')
-  with open('tokenizer.pickle', 'rb') as handle:
+  model = tf.keras.models.load_model('model/model.h5')
+  with open('model/tokenizer.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
   return [model, tokenizer]
   
